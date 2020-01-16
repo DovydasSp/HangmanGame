@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HangmanServer {
+
     private final ServerSocket listener;
     private final List<Connection> clients;
 
@@ -54,25 +55,17 @@ public class HangmanServer {
         public void send(String message) {
             pw.println(message);
         }
-        
-        public String read(){
-            System.out.println("Trying to read");
+
+        public String read() {
             try {
-                String line;
-                while ((line = br.readLine()) != null) {
-                    //System.out.println(line);
-                    //send(line);
-                    System.out.println("Received: " + line);
-                    return line;
-                }
-                //return br.readLine();
+                String line = br.readLine();
+                return line;
             } catch (IOException ioe) {
                 System.err.println("I/O error: " + ioe.getMessage());
-            } finally {
-                System.out.println("Client removed");
                 clients.remove(this);
+                System.out.println("Client removed");
             }
-            return "";
+            return "-";
         }
     }
 
