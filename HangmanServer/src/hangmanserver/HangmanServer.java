@@ -30,6 +30,7 @@ public class HangmanServer {
                 Connection con = new Connection(socket);
                 clients.add(con);
                 con.start();
+                System.out.println("Active users: " + clients.size());
             }
         } catch (IOException ioe) {
             System.err.println("I/O error: " + ioe.getMessage());
@@ -48,8 +49,10 @@ public class HangmanServer {
 
         @Override
         public void run() {
-            //send("Welcome!");
             GameLogic gl = new GameLogic(this);
+            clients.remove(this);
+            System.out.println("Client removed");
+            Thread.currentThread().interrupt();
         }
 
         public void send(String message) {
@@ -62,10 +65,8 @@ public class HangmanServer {
                 return line;
             } catch (IOException ioe) {
                 System.err.println("I/O error: " + ioe.getMessage());
-                clients.remove(this);
-                System.out.println("Client removed");
+                return "~";
             }
-            return "-";
         }
     }
 

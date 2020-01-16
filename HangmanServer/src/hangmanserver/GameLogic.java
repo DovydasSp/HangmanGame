@@ -25,6 +25,8 @@ public class GameLogic {
             while (livesLost < Constants.LIVES && secretWord.contains("*")) {
                 con.send("Guess any letter in the word: " + secretWord);
                 char guess = con.read().charAt(0);
+                if(guess == '~')
+                    return;
                 hang(guess);
             }
 
