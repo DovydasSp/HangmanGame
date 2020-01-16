@@ -12,15 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HangmanServer {
-
-    private final static int PORT_NO = 4000;
     private final ServerSocket listener;
     private final List<Connection> clients;
 
     HangmanServer() throws IOException {
-        listener = new ServerSocket(PORT_NO);
+        listener = new ServerSocket(Constants.PORT);
         clients = new ArrayList<>();
-        System.out.println("Listening on port: " + PORT_NO);
+        System.out.println("Listening on port: " + Constants.PORT);
     }
 
     void runServer() {
@@ -37,10 +35,10 @@ public class HangmanServer {
         }
     }
 
-    private class Connection extends Thread {
+    public class Connection extends Thread {
 
-        private BufferedReader br;
-        private PrintWriter pw;
+        private final BufferedReader br;
+        private final PrintWriter pw;
 
         Connection(Socket s) throws IOException {
             br = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -49,23 +47,32 @@ public class HangmanServer {
 
         @Override
         public void run() {
-            send("Welcome!");
-            String line;
+            //send("Welcome!");
+            GameLogic gl = new GameLogic(this);
+        }
+
+        public void send(String message) {
+            pw.println(message);
+        }
+        
+        public String read(){
+            System.out.println("Trying to read");
             try {
+                String line;
                 while ((line = br.readLine()) != null) {
-                    System.out.println(line);
+                    //System.out.println(line);
                     //send(line);
+                    System.out.println("Received: " + line);
+                    return line;
                 }
+                //return br.readLine();
             } catch (IOException ioe) {
                 System.err.println("I/O error: " + ioe.getMessage());
             } finally {
                 System.out.println("Client removed");
                 clients.remove(this);
             }
-        }
-
-        private void send(String message) {
-            pw.println(message);
+            return "";
         }
     }
 
