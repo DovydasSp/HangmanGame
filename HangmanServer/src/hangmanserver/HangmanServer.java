@@ -65,7 +65,7 @@ public class HangmanServer {
                 return line;
             } catch (IOException ioe) {
                 System.err.println("I/O error: " + ioe.getMessage());
-                return "~";
+                return Constants.COMMAND_USER_EXITED;
             }
         }
     }
