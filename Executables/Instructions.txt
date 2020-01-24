@@ -1,0 +1,8 @@
+To run the server or client from the command line, open cmd, go to the Executables folder and
+type one of the two following:
+
+1. To run server:
+java -jar .\HangmanServer.jar
+
+2. To run client:
+java -jar .\HangmanClient.jar
