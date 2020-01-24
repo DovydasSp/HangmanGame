@@ -9,9 +9,9 @@ import java.net.Socket;
 
 public class HangmanClient {
 
+    //Make a connection to the server and start reading in new thread
     public static void main(String[] args) throws Exception {
         Socket socket = new Socket("127.0.0.1", Constants.PORT);
-        //UI ui = new UI();
         try {
             InputConnection con = new InputConnection(socket);
             con.start();
@@ -20,11 +20,13 @@ public class HangmanClient {
         }
     }
 
+    //Thread to accept commands from the server
     public static class InputConnection extends Thread {
 
         private final BufferedReader readerChannel;
         private final UI ui;
 
+        //Initialize reader and start output thread
         InputConnection(Socket socket) throws IOException {
             readerChannel = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             OutputConnection op = new OutputConnection(socket);
@@ -32,6 +34,7 @@ public class HangmanClient {
             ui = new UI(op);
         }
 
+        //Method to read commands sent by the server
         @Override
         public void run() {
             try {
@@ -45,6 +48,7 @@ public class HangmanClient {
             }
         }
         
+        //Proccess parsed commands to take appropriate steps
         private void processCommands(String command){
             if(command.contains(Constants.COMMAND_LIVES)){
                 ui.editLivesLeft(command.replace(Constants.COMMAND_LIVES, ""));
@@ -54,12 +58,10 @@ public class HangmanClient {
                 
             }
             if(command.contains(Constants.COMMAND_LOST)){
-                ui.editWordToGuess(command.replace(Constants.COMMAND_LOST, ""));
-                ui.editInfoMessage("You have lost...");
+                ui.InitRestartPrompt(false, command.replace(Constants.COMMAND_LOST, ""));
             }
             if(command.contains(Constants.COMMAND_WON)){
-                ui.editWordToGuess(command.replace(Constants.COMMAND_WON, ""));
-                ui.editInfoMessage("You have won!");
+                ui.InitRestartPrompt(true, command.replace(Constants.COMMAND_WON, ""));
             }
             
             if(command.contains(Constants.COMMAND_RESTART)){
@@ -77,29 +79,13 @@ public class HangmanClient {
         }
     }
     
+    //Thread to send guesses to the server
     public static class OutputConnection extends Thread {
 
         private final PrintWriter writerChannel;
 
         OutputConnection(Socket socket) throws IOException {
             writerChannel = new PrintWriter(socket.getOutputStream(), true);
-        }
-
-        @Override
-        public void run() {
-            /*try {
-                String line;
-                while ((line = readerChannel.readLine()) != null) {
-                    System.out.println(line);
-                    processCommands(line);
-                    if (line.contains("/guess") || line.contains("/restart")) {
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-                        send(reader.readLine());
-                    }
-                }
-            } catch (IOException ioe) {
-                System.err.println("I/O error: " + ioe.getMessage());
-            }*/
         }
 
         public void send(String message) throws IOException {
